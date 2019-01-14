@@ -35,10 +35,30 @@ class UI {
       <td>${book.title}</td>
       <td>${book.author}</td>
       <td>${book.isbn}</td>
-      <td><a href="#" class="btn btn-danger btn-sm deelte">X</a></td>
+      <td><a href="#" class="btn btn-danger btn-sm delete">X</a></td>
     `;
 
     list.appendChild(row);
+  }
+
+  static deleteBook(el) {
+    if (el.classList.contains("delete")) {
+      el.parentElement.parentElement.remove();
+    }
+  }
+
+  static showAlert(message, className) {
+    const div = document.createElement("div");
+    div.className = `alert alert-${className}`;
+    div.appendChild(document.createTextNode(message));
+    const container = document.querySelector(".container");
+    const form = document.querySelector("#book-form");
+    container.insertBefore(div, form);
+
+    //vanish in 3 seconds
+    setTimeout(() => {
+      document.querySelector(".alert").remove();
+    }, 3000);
   }
 
   static clearFields() {
@@ -59,12 +79,27 @@ document.querySelector("#book-form").addEventListener("submit", e => {
   const author = document.querySelector("#author").value;
   const isbn = document.querySelector("#isbn").value;
 
-  //instatiare book
-  const book = new Book(title, author, isbn);
+  //validate
+  if (title === "" || author === "" || isbn === "") {
+    UI.showAlert("Please fill in all fields", "danger");
+  } else {
+    //instatiare book
+    const book = new Book(title, author, isbn);
 
-  //Add Book to UI
-  UI.addBookToList(book);
-  //clear fieds
-  UI.clearFields();
+    //Add Book to UI
+    UI.addBookToList(book);
+
+    //show success mesasge
+    UI.showAlert("Book added", "success");
+    //clear fieds
+    UI.clearFields();
+  }
 });
 //Event: Remove a Book
+document.querySelector("#book-list").addEventListener("click", e => {
+  UI.deleteBook(e.target);
+  //console.log(e.target);
+
+  //show success mesasge
+  UI.showAlert("Book remove", "info");
+});
